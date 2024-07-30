@@ -121,7 +121,7 @@ VOID Vector<T_ELE>::pop_back() {
 	if (this->empty()) {
 		return;
 	}
-	//memset(m_pVector + ((m_dwIndex - 1) * sizeof(T_ELE)), 0, sizeof(T_ELE));
+	memset(&m_pVector[m_dwIndex - 1], 0, sizeof(T_ELE));
 	this->m_dwIndex--;
 }
 
@@ -185,19 +185,23 @@ BOOL Vector<T_ELE>::empty() {
 
 template <class T_ELE>
 VOID Vector<T_ELE>::erase(DWORD dwIndex) {
+
+	//如果索引值刚好是最后一个存入的数，则直接pop出去
+	if (dwIndex == m_dwIndex - 1) {
+		this->pop_back();
+	}
+
+
 	//如果要去除的索引值在以存数据之中，那么将要去除的下一个索引往左挪
 	if (dwIndex < m_dwIndex) {
-		memcpy(&m_pVector[dwIndex], &m_pVector[dwIndex + 1], ((m_dwIndex - 1) - dwIndex) * sizeof(T_ELE));
+		memcpy(&m_pVector[dwIndex], &m_pVector[dwIndex + 1], (m_dwIndex - dwIndex) * sizeof(T_ELE));
 		m_dwIndex--;
 	}
 	//判断越界
 	/*if (dwIndex > m_dwIndex) {
 		return;
 	}*/
-	//如果索引值刚好是最后一个存入的数，则直接pop出去
-	if (dwIndex == m_dwIndex - 1) {
-		this->pop_back();
-	}
+	
 
 }
 
@@ -218,7 +222,7 @@ int main()
 	}
 	V1->insert(5, 0x70);
 	//V1->clear();
-	V1->erase(5);
+	V1->erase(16);
 	std::cout << V1->capacity() << std::endl;
 	
 }
