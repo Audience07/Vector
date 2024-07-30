@@ -37,9 +37,9 @@ Vector<T_ELE>::Vector():
 	m_dwInitSize(100),m_dwIncrement(5) 
 {
 	//设置初始Vector大小与空间不足时每次增加的大小
-	this->m_pVector = new T_ELE[m_dwInitSize];
+	this->m_pVector = new T_ELE[m_dwInitSize]{};
 	//初始化内存
-	memset(m_pVector, 0, m_dwInitSize * sizeof(T_ELE));
+	//memset(m_pVector, 0, m_dwInitSize * sizeof(T_ELE));
 
 	this->m_dwLen = m_dwInitSize;
 	this->m_dwIndex = 0;
@@ -51,9 +51,9 @@ template <class T_ELE>
 Vector<T_ELE>::Vector(DWORD dwSize):
 	m_dwInitSize(dwSize),m_dwIncrement(5)
 {
-	this->m_pVector = new T_ELE[m_dwInitSize];
+	this->m_pVector = new T_ELE[m_dwInitSize]{};
 	//初始化内存
-	memset(m_pVector, 0, m_dwInitSize * sizeof(T_ELE));
+	//memset(m_pVector, 0, m_dwInitSize * sizeof(T_ELE));
 	this->m_dwLen = m_dwInitSize;
 	this->m_dwIndex = 0;
 }
@@ -63,6 +63,7 @@ template <class T_ELE>
 Vector<T_ELE>::~Vector() 
 {
 	delete[] m_pVector;
+	m_pVector = nullptr;
 	std::cout << "已被释放" << std::endl;
 }
 //增容
@@ -110,13 +111,16 @@ DWORD Vector<T_ELE>::push_back(T_ELE Element) {
 		this->expend();
 	}
 	//将数据填入向量,并把下一个元素的位置加一
-	this->m_pVector[m_dwIndex] = Element;
+	memcpy(m_pVector+m_dwIndex, &Element, sizeof(T_ELE));
 	this->m_dwIndex++;
 	return 0;
 }
 
 template<class T_ELE>
 VOID Vector<T_ELE>::pop_back() {
+	if (this->empty()) {
+		return -1;
+	}
 	//memset(m_pVector + ((m_dwIndex - 1) * sizeof(T_ELE)), 0, sizeof(T_ELE));
 	this->m_dwIndex--;
 }
@@ -137,10 +141,10 @@ DWORD Vector<T_ELE>::insert(DWORD dwIndex, T_ELE Element) {
 		return 0;
 	}
 	//将数据后挪，空出一位
-	memcpy(m_pVector + dwIndex, m_pVector + (dwIndex - 1), (m_dwIndex - dwIndex + 1) * sizeof(T_ELE));
+	memcpy(m_pVector + (dwIndex+1), m_pVector + dwIndex, (m_dwIndex - dwIndex) * sizeof(T_ELE));
 
 	//在指定位置插入数据
-	m_pVector[dwIndex] = Element;
+	memcpy(m_pVector + dwIndex, &Element, sizeof(T_ELE));
 
 
 	//在后挪后，下一个可用索引位置加一
@@ -209,12 +213,13 @@ DWORD Vector<T_ELE>::size() {
 
 int main() 
 {
-	Vector<int> V1(13);
+	//Vector<int>* V1 = new Vector<int>(13);
+	Vector<int>* V1 = new Vector<int>;
 	for (int i{ 0x10 }; i < 0x20; i++) {
-		V1.push_back(i);
+		V1->push_back(i);
 	}
-	V1.insert(5, 0x70);
-	V1.clear();
-	std::cout << V1.capacity() << std::endl;
+	V1->insert(5, 0x70);
+	V1->clear();
+	std::cout << V1->capacity() << std::endl;
 	
 }
