@@ -111,7 +111,7 @@ DWORD Vector<T_ELE>::push_back(T_ELE Element) {
 		this->expend();
 	}
 	//将数据填入向量,并把下一个元素的位置加一
-	memcpy(m_pVector+m_dwIndex, &Element, sizeof(T_ELE));
+	memcpy(&m_pVector[m_dwIndex], &Element, sizeof(T_ELE));
 	this->m_dwIndex++;
 	return 0;
 }
@@ -119,7 +119,7 @@ DWORD Vector<T_ELE>::push_back(T_ELE Element) {
 template<class T_ELE>
 VOID Vector<T_ELE>::pop_back() {
 	if (this->empty()) {
-		return -1;
+		return;
 	}
 	//memset(m_pVector + ((m_dwIndex - 1) * sizeof(T_ELE)), 0, sizeof(T_ELE));
 	this->m_dwIndex--;
@@ -141,7 +141,7 @@ DWORD Vector<T_ELE>::insert(DWORD dwIndex, T_ELE Element) {
 		return 0;
 	}
 	//将数据后挪，空出一位
-	memcpy(m_pVector + (dwIndex+1), m_pVector + dwIndex, (m_dwIndex - dwIndex) * sizeof(T_ELE));
+	memcpy(&m_pVector[dwIndex + 1], &m_pVector[dwIndex], (m_dwIndex - dwIndex) * sizeof(T_ELE));
 
 	//在指定位置插入数据
 	memcpy(m_pVector + dwIndex, &Element, sizeof(T_ELE));
@@ -187,18 +187,16 @@ template <class T_ELE>
 VOID Vector<T_ELE>::erase(DWORD dwIndex) {
 	//如果要去除的索引值在以存数据之中，那么将要去除的下一个索引往左挪
 	if (dwIndex < m_dwIndex) {
-		memcpy(m_pVector + dwIndex, m_pVector + (dwIndex + 1), ((m_dwIndex - 1) - dwIndex) * sizeof(T_ELE));
+		memcpy(&m_pVector[dwIndex], &m_pVector[dwIndex + 1], ((m_dwIndex - 1) - dwIndex) * sizeof(T_ELE));
 		m_dwIndex--;
-		return 0;
 	}
 	//判断越界
-	if (dwIndex > m_dwIndex) {
-		return -1;
-	}
+	/*if (dwIndex > m_dwIndex) {
+		return;
+	}*/
 	//如果索引值刚好是最后一个存入的数，则直接pop出去
 	if (dwIndex == m_dwIndex - 1) {
 		this->pop_back();
-		return 0;
 	}
 
 }
@@ -219,7 +217,8 @@ int main()
 		V1->push_back(i);
 	}
 	V1->insert(5, 0x70);
-	V1->clear();
+	//V1->clear();
+	V1->erase(5);
 	std::cout << V1->capacity() << std::endl;
 	
 }
